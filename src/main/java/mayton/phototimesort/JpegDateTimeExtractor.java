@@ -22,7 +22,7 @@ import static java.util.Arrays.asList;
 
 public class JpegDateTimeExtractor {
 
-    public static Logger logger = LoggerFactory.getLogger(JpegDateTimeExtractor.class);
+    static Logger logger = LoggerFactory.getLogger(JpegDateTimeExtractor.class);
 
     private static class Singleton {
         public static final JpegDateTimeExtractor INSTANCE = new JpegDateTimeExtractor();
@@ -65,15 +65,13 @@ public class JpegDateTimeExtractor {
             if (metadata != null) {
                 TiffImageMetadata items = ((JpegImageMetadata) metadata).getExif();
                 if (items != null) {
-                    if (logger.isDebugEnabled()) {
-                        for (TiffField field : items.getAllFields()) {
-                            logger.debug("..processing tag {}", field.toString());
-                        }
+                    for (TiffField field : items.getAllFields()) {
+                        logger.debug("..processing tag {}", field.toString());
                     }
                     for (TiffField field : items.getAllFields()) {
                         if (field.getFieldType() == FieldType.ASCII) {
                             String tagName = field.getTagName();
-                            for (String tag : exifTags) {
+                            for(String tag : exifTags) {
                                 if (tag.equals(tagName)) {
                                     value = safeGetValue(field);
                                     if (value.isPresent()) {
@@ -89,16 +87,12 @@ public class JpegDateTimeExtractor {
             } else {
                 logger.warn("No TiffImageMetadata detected!");
             }
-        } catch (ClassCastException e) {
-            logger.error("ClassCastException", e);
-        } catch (NullPointerException e) {
-            logger.error("NullPointerException", e);
         } catch (ImageReadException e) {
-            logger.error("ImageReadException", e);
+            logger.error("ImageReadException ", e);
         } catch (IOException e) {
-            logger.error("IOException", e);
+            logger.error("IOException ", e);
         } catch (DateTimeParseException e) {
-            logger.warn("DateTimeParseException during parse " + value.get(), e);
+            logger.error("DateTimeParseException during parse '{}'", value.get());
         }
         return result;
     }

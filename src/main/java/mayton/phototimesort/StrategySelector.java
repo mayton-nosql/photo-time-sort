@@ -1,30 +1,30 @@
 package mayton.phototimesort;
 
-import mayton.phototimesort.strategies.DummyCopyStrategy;
 import org.apache.commons.text.CaseUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Logger;
 
 public class StrategySelector {
 
-    public static Logger logger = Logger.getLogger("StrategySelector");
+    static Logger logger = LoggerFactory.getLogger(StrategySelector.class);
 
     public static String strategyToClassName(String strategyName) {
         return CaseUtils.toCamelCase(strategyName, true, '_') + "CopyStrategy";
     }
 
     public static ICopyStrategy directSelectStrategy(String strategyName) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        logger.finest("strategy = " + strategyName);
+        logger.debug("strategy = {}", strategyName);
         String className = "mayton.phototimesort.strategies." + strategyToClassName(strategyName);
-        logger.finest("className = " + className);
+        logger.debug("className = {}", className);
         Class clazz = Class.forName(className);
-        logger.finest("classObject = " + clazz.getCanonicalName());
+        logger.debug("classObject = {}", clazz.getCanonicalName());
         Constructor constructor = clazz.getConstructors()[0];
-        logger.finest("constructor detected");
+        logger.debug("constructor detected");
         ICopyStrategy copyStrategy = (ICopyStrategy) constructor.newInstance();
-        logger.finest("copyStrategy object = " + copyStrategy.getClass().getCanonicalName());
+        logger.debug("copyStrategy object = {}", copyStrategy.getClass().getCanonicalName());
         return copyStrategy;
     }
 
